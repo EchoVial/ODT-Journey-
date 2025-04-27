@@ -1,0 +1,83 @@
+from machine import Pin, PWM
+import time, neopixel
+
+# ----- Setup -----
+Ledseries = (5, 18, 19)
+Buzzer = Pin(21, Pin.OUT)
+ring = neopixel.NeoPixel(Pin(15), 16)
+
+# Servo setup
+pwmpin = PWM(Pin(4))
+pwmpin.freq(50)
+
+# Motor setup
+ENA = PWM(Pin(14))
+ENA.freq(1000)
+ENA.duty(1000)
+In1 = Pin(13, Pin.OUT)
+In2 = Pin(12, Pin.OUT)
+
+# ----- Start Sequence -----
+
+# Servo move to initial position
+pwmpin.duty(90)
+time.sleep(0.5)
+pwmpin.duty(65)
+In1.value(0)
+In2.value(0)
+
+# Blink LEDs
+for led_pin in Ledseries:
+    led = Pin(led_pin, Pin.OUT)
+    led.value(1)
+    time.sleep(0.3)
+    led.value(0)
+
+time.sleep(0.5)
+
+# Buzzer ON/OFF
+Buzzer.value(1)
+time.sleep(0.5)
+Buzzer.value(0)
+time.sleep(0.25)
+
+# Animate NeoPixel Ring ON
+for i in range(16):
+    ring[i] = (255, 255, 255)
+    ring.write()
+    time.sleep(0.025)
+
+# Animate NeoPixel Ring OFF
+for i in range(16):
+    ring[i] = (0, 0, 0)
+    ring.write()
+    time.sleep(0.025)
+
+# Wait and move servo
+time.sleep(3)
+pwmpin.duty(110)
+time.sleep(8)
+
+# Motor sequence
+print("Starting motor sequence")
+
+for i in range(1): 
+    # Move forward
+    In1.value(1)
+    In2.value(0)
+    time.sleep(11.5)
+
+    # Stop
+    In1.value(0)
+    In2.value(0)
+    time.sleep(5)
+
+    # Move backward
+    In1.value(0)
+    In2.value(1)
+    time.sleep(11.5)
+
+    # Stop
+    In1.value(0)
+    In2.value(0)
+    time.sleep(5)
